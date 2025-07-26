@@ -5,7 +5,7 @@ body {
 
 .cell {
   transition-timing-function: ease-out;
-  transition-duration: 100ms;
+  transition-duration: 200ms;
 }
 
 #playAgainBtn:hover {
@@ -14,6 +14,16 @@ body {
 
 .text-stroke {
   -webkit-text-stroke: 4px black; /* THICK border */
+}
+
+#modalWindow {
+  transition-timing-function: ease-out;
+  transition-duration: 200ms;
+}
+
+.row {
+  transition-timing-function: ease-out;
+  transition-duration: 200ms;
 }
 
 .text-stroke2 {

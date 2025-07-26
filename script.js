@@ -1,3 +1,5 @@
+//owner : rajat ulhas kinlekar
+
 class Cell {
   constructor(row, column) {
     this.row = row;
@@ -176,13 +178,57 @@ class UIManager {
     }
   }
 
+  renderWinnerRowAnimation(cellContainer, flag) {
+    let parentElement = cellContainer.parentElement;
+
+    if (flag) {
+      cellContainer.classList.add("transform");
+      cellContainer.classList.add("scale-110");
+      parentElement.classList.add("border-5");
+      parentElement.classList.add("border-yellow-500");
+      parentElement.classList.add("p-5");
+      parentElement.classList.add("rounded-2xl");
+    } else {
+      cellContainer.classList.remove("transform");
+      cellContainer.classList.remove("scale-110");
+      parentElement.classList.remove("border-5");
+      parentElement.classList.remove("border-yellow-500");
+      parentElement.classList.remove("p-5");
+      parentElement.classList.remove("rounded-2xl");
+    }
+  }
+
+  blurScreen(flag) {
+    if (flag) {
+      containerBox.classList.add("blur-2xl");
+      playerBox.classList.add("blur-2xl");
+    } else {
+      containerBox.classList.remove("blur-2xl");
+      playerBox.classList.remove("blur-2xl");
+    }
+  }
+
   renderWinnerRow(row) {
-   console.log(row)
+    this.cellContainerArray.forEach((cellContainer) => {
+      Object.entries(cellContainer).forEach(([key, element]) => {
+        if (parseInt(element.parentElement.id) === row) {
+          this.renderWinnerRowAnimation(element, true);
+        }
+
+        setTimeout(() => {
+          this.renderWinnerRowAnimation(element, false);
+          this.blurScreen(true);
+          
+
+          modalWindow.classList.remove("hidden");
+          globalStatePause = false;
+        }, 590);
+      });
+    });
   }
 }
 
 class GameManager {
-
   // getWinner()
 
   getWinner(cellArray, option) {
@@ -191,7 +237,7 @@ class GameManager {
 
     // check columns
     let col = this.checkColumns(cellArray, option);
-    
+
     // check left diagonal
     let leftDiagonal = this.checkLDiagonal(cellArray, option);
 
@@ -199,35 +245,30 @@ class GameManager {
     let rightDiagonal = this.checkRDiagonal(cellArray, option);
 
     if (row !== -1) {
-      return {row};
-    } 
+      return { row };
+    }
 
     if (col !== -1) {
-      return {col};
+      return { col };
     }
 
     if (leftDiagonal !== -1) {
-      return {leftDiagonal};
+      return { leftDiagonal };
     }
 
     if (rightDiagonal !== -1) {
-      return {rightDiagonal};
+      return { rightDiagonal };
     }
-
-
   }
 
   // rows
   checkRows(cellArray, option) {
     let row;
     for (let i = 0; i < 3; i++) {
-
       row = i;
       let flag = true;
 
-
       for (let j = 0; j < 3; j++) {
-
         if (!cellArray[i][j] || cellArray[i][j].getOption() !== option) {
           row = -1;
           flag = false;
@@ -238,7 +279,6 @@ class GameManager {
       if (flag) {
         return row;
       }
-      
     }
 
     return row;
@@ -246,14 +286,14 @@ class GameManager {
 
   // columns
   checkColumns(cellArray, option) {
-    
     for (let col = 0; col < cellArray.length; col++) {
-      
       let flag = true;
-      
+
       for (let row = 0; row < cellArray.length; row++) {
-        
-        if (cellArray[row][col] === undefined || cellArray[row][col].getOption() !== option) {
+        if (
+          cellArray[row][col] === undefined ||
+          cellArray[row][col].getOption() !== option
+        ) {
           flag = false;
           break;
         }
@@ -265,9 +305,6 @@ class GameManager {
     }
 
     return -1;
-
-    
-
   }
 
   // left diagonal
@@ -287,7 +324,6 @@ class GameManager {
     let col = cellArray.length - 1;
 
     while (row < cellArray.length && col < cellArray.length) {
-
       if (!cellArray[row][col] || cellArray[row][col].getOption() !== option) {
         return -1;
       }
@@ -298,13 +334,15 @@ class GameManager {
 
     return 0;
   }
-  
-
 }
 
 const cells = document.querySelectorAll(".cell");
 const playerA = document.getElementById("playerA");
 const playerB = document.getElementById("playerB");
+const modalWindow = document.getElementById("modalWindow");
+const containerBox = document.querySelector(".containerBox");
+const playerBox = document.getElementById("playerBox");
+let globalStatePause = false;
 
 let moves = 0;
 
@@ -314,6 +352,11 @@ let gameManager = new GameManager();
 
 cells.forEach((cell) => {
   cell.addEventListener("click", (e) => {
+
+    if (globalStatePause) {
+      return;
+    }
+
     if (moves < 9) {
       let canvasCell = new Cell(cell.parentElement.id, cell.id);
       if (moves % 2 === 0) {
@@ -327,20 +370,21 @@ cells.forEach((cell) => {
       let active = canvas.updateCellArray(canvasCell);
       canvas.updateCellElementContainerArray(canvasCell, cell);
 
-
       uIManager.renderClickAnimation(cell);
       uIManager.renderCell(canvasCell, cell);
       uIManager.renderActivePlayer(playerA, playerB, active);
-      
+
       let winnerXObj = gameManager.getWinner(canvas.getCellArray(), "X");
       let winnerOObj = gameManager.getWinner(canvas.getCellArray(), "O");
 
       //console.log(winnerXObj)
-      
+
       // check for X winner
       if (winnerXObj) {
         if ("row" in winnerXObj) {
           console.log("row number(X) : " + winnerXObj.row);
+          uIManager.renderWinnerRow(winnerXObj.row);
+          globalStatePause = true;
         }
 
         if ("col" in winnerXObj) {
@@ -352,7 +396,7 @@ cells.forEach((cell) => {
         }
 
         if ("rightDiagonal" in winnerXObj) {
-          console.log("right diagonal")
+          console.log("right diagonal");
         }
       }
 
@@ -360,6 +404,7 @@ cells.forEach((cell) => {
       if (winnerOObj) {
         if ("row" in winnerOObj) {
           console.log("row number(O) : " + winnerOObj.row);
+          uIManager.renderWinnerRow(winnerOObj.row);
         }
 
         if ("col" in winnerOObj) {
@@ -371,10 +416,9 @@ cells.forEach((cell) => {
         }
 
         if ("rightDiagonal" in winnerOObj) {
-          console.log("right diagonal")
+          console.log("right diagonal");
         }
       }
-
 
       if (!active) {
         moves--;
