@@ -154,9 +154,9 @@ class UIManager {
     let cellContainerElement = this.cellContainerArray[row][column];
 
     // append the paragraph element inside the container cell only if it doesnt contain existing value
-    console.log("innerhtml = " + cellContainerElement.innerHTML);
+    //console.log("innerhtml = " + cellContainerElement.innerHTML);
     if (cellContainerElement.innerHTML.trim().length === 0) {
-      console.log("hello");
+      //console.log("hello");
       cellContainerElement.append(p);
     }
   }
@@ -176,9 +176,130 @@ class UIManager {
     }
   }
 
-  renderWinnerRow() {
-   
+  renderWinnerRow(row) {
+   console.log(row)
   }
+}
+
+class GameManager {
+
+  // getWinner()
+
+  getWinner(cellArray, option) {
+    // check rows
+    let row = this.checkRows(cellArray, option);
+
+    // check columns
+    let col = this.checkColumns(cellArray, option);
+    
+    // check left diagonal
+    let leftDiagonal = this.checkLDiagonal(cellArray, option);
+
+    // check right diagonal
+    let rightDiagonal = this.checkRDiagonal(cellArray, option);
+
+    if (row !== -1) {
+      return {row};
+    } 
+
+    if (col !== -1) {
+      return {col};
+    }
+
+    if (leftDiagonal !== -1) {
+      return {leftDiagonal};
+    }
+
+    if (rightDiagonal !== -1) {
+      return {rightDiagonal};
+    }
+
+
+  }
+
+  // rows
+  checkRows(cellArray, option) {
+    let row;
+    for (let i = 0; i < 3; i++) {
+
+      row = i;
+      let flag = true;
+
+
+      for (let j = 0; j < 3; j++) {
+
+        if (!cellArray[i][j] || cellArray[i][j].getOption() !== option) {
+          row = -1;
+          flag = false;
+          break;
+        }
+      }
+
+      if (flag) {
+        return row;
+      }
+      
+    }
+
+    return row;
+  }
+
+  // columns
+  checkColumns(cellArray, option) {
+    
+    for (let col = 0; col < cellArray.length; col++) {
+      
+      let flag = true;
+      
+      for (let row = 0; row < cellArray.length; row++) {
+        
+        if (cellArray[row][col] === undefined || cellArray[row][col].getOption() !== option) {
+          flag = false;
+          break;
+        }
+      }
+
+      if (flag) {
+        return col;
+      }
+    }
+
+    return -1;
+
+    
+
+  }
+
+  // left diagonal
+  checkLDiagonal(cellArray, option) {
+    for (let i = 0; i < 3; i++) {
+      if (!cellArray[i][i] || cellArray[i][i].getOption() !== option) {
+        return -1;
+      }
+    }
+
+    return 0;
+  }
+
+  // right diagonal
+  checkRDiagonal(cellArray, option) {
+    let row = 0;
+    let col = cellArray.length - 1;
+
+    while (row < cellArray.length && col < cellArray.length) {
+
+      if (!cellArray[row][col] || cellArray[row][col].getOption() !== option) {
+        return -1;
+      }
+
+      row++;
+      col--;
+    }
+
+    return 0;
+  }
+  
+
 }
 
 const cells = document.querySelectorAll(".cell");
@@ -189,6 +310,7 @@ let moves = 0;
 
 let canvas = new Canvas();
 let uIManager = new UIManager(canvas, moves);
+let gameManager = new GameManager();
 
 cells.forEach((cell) => {
   cell.addEventListener("click", (e) => {
@@ -209,11 +331,52 @@ cells.forEach((cell) => {
       uIManager.renderClickAnimation(cell);
       uIManager.renderCell(canvasCell, cell);
       uIManager.renderActivePlayer(playerA, playerB, active);
-      uIManager.renderWinnerRow();
+      
+      let winnerXObj = gameManager.getWinner(canvas.getCellArray(), "X");
+      let winnerOObj = gameManager.getWinner(canvas.getCellArray(), "O");
+
+      //console.log(winnerXObj)
+      
+      // check for X winner
+      if (winnerXObj) {
+        if ("row" in winnerXObj) {
+          console.log("row number(X) : " + winnerXObj.row);
+        }
+
+        if ("col" in winnerXObj) {
+          console.log("col number(X) : " + winnerXObj.col);
+        }
+
+        if ("leftDiagonal" in winnerXObj) {
+          console.log("left diagonal");
+        }
+
+        if ("rightDiagonal" in winnerXObj) {
+          console.log("right diagonal")
+        }
+      }
+
+      // check for O winner
+      if (winnerOObj) {
+        if ("row" in winnerOObj) {
+          console.log("row number(O) : " + winnerOObj.row);
+        }
+
+        if ("col" in winnerOObj) {
+          console.log("col number(O) : " + winnerOObj.col);
+        }
+
+        if ("leftDiagonal" in winnerOObj) {
+          console.log("left diagonal");
+        }
+
+        if ("rightDiagonal" in winnerOObj) {
+          console.log("right diagonal")
+        }
+      }
 
 
       if (!active) {
-        console.log("hellow");
         moves--;
       }
 
