@@ -104,10 +104,16 @@ class Canvas {
       return true;
     }
   }
+
+  resetArrays() {
+    this.cellArray = [[], [], []];
+    //this.cellElementContainerArray = [[], [], []];
+  }
 }
 
 class UIManager {
   constructor(canvas, moves) {
+    this.cellArray = canvas.getCellArray();
     this.cellContainerArray = canvas.getCellElementContainerArray();
     this.moves = moves;
 
@@ -155,6 +161,8 @@ class UIManager {
     // get the cell container element using row and cell
     let cellContainerElement = this.cellContainerArray[row][column];
 
+    console.log(cellContainerElement);
+
     // append the paragraph element inside the container cell only if it doesnt contain existing value
     //console.log("innerhtml = " + cellContainerElement.innerHTML);
     if (cellContainerElement.innerHTML.trim().length === 0) {
@@ -165,7 +173,6 @@ class UIManager {
 
   renderActivePlayer(playerA, playerB, active) {
     let activeClass = "bg-gradient-to-b from-yellow-400 to-orange-400";
-    //let nonActiveClass = "bg-gradient-to-b from-gray-900 to-slate-600";
 
     if (active) {
       activeClass.split(" ").forEach((cls) => {
@@ -178,24 +185,44 @@ class UIManager {
     }
   }
 
-  renderWinnerRowAnimation(cellContainer, flag) {
-    let parentElement = cellContainer.parentElement;
+  renderWinnerAnimation(cellContainer, flag) {
+    //let parentElement = cellContainer.parentElement;
+
+    console.log(flag);
 
     if (flag) {
-      cellContainer.classList.add("transform");
-      cellContainer.classList.add("scale-110");
-      parentElement.classList.add("border-5");
-      parentElement.classList.add("border-yellow-500");
-      parentElement.classList.add("p-5");
-      parentElement.classList.add("rounded-2xl");
+      console.log("column render");
+      cellContainer.classList.remove("border-white");
+      cellContainer.classList.remove("border-2");
+      cellContainer.classList.add("border-7");
+      cellContainer.classList.add("border-green-600");
     } else {
-      cellContainer.classList.remove("transform");
-      cellContainer.classList.remove("scale-110");
-      parentElement.classList.remove("border-5");
-      parentElement.classList.remove("border-yellow-500");
-      parentElement.classList.remove("p-5");
-      parentElement.classList.remove("rounded-2xl");
+      cellContainer.classList.add("border-white");
+      cellContainer.classList.add("border-2");
+      cellContainer.classList.remove("border-7");
+      cellContainer.classList.remove("border-green-600");
     }
+  }
+
+  renderModalWindow(flag, modalWindowInput) {
+    // this.blurScreen(flag);
+
+    console.log(modalWindowInput);
+
+    let timeout = flag ? 1000 : 0;
+
+    if (flag) {
+      setTimeout(() => {
+        this.blurScreen(flag);
+        modalWindowInput.classList.remove("hidden");
+      }, timeout);
+    } else {
+      setTimeout(() => {
+        this.blurScreen(flag);
+        modalWindowInput.classList.add("hidden");
+      }, timeout);
+    }
+    globalStatePause = false;
   }
 
   blurScreen(flag) {
@@ -208,21 +235,87 @@ class UIManager {
     }
   }
 
-  renderWinnerRow(row) {
-    this.cellContainerArray.forEach((cellContainer) => {
-      Object.entries(cellContainer).forEach(([key, element]) => {
-        if (parseInt(element.parentElement.id) === row) {
-          this.renderWinnerRowAnimation(element, true);
+  renderWinnerRow(rowInput, flag, modalWindowInput) {
+    console.log(rowInput, flag, modalWindowInput);
+    //console.log("hello world")
+    for (let row = 0; row < 3; row++) {
+      console.log(row === rowInput);
+      if (row === rowInput) {
+        for (let col = 0; col < 3; col++) {
+          console.log(this.cellContainerArray[row][col]);
+          this.renderWinnerAnimation(this.cellContainerArray[row][col], flag);
+          this.renderModalWindow(flag, modalWindowInput);
+          //this.renderWinnerAnimation(this.cellContainerArray[row][col], false);
         }
+      }
+      // break;
+    }
+  }
 
-        setTimeout(() => {
-          this.renderWinnerRowAnimation(element, false);
-          this.blurScreen(true);
-          
+  renderWinnerColumn(colInput, flag, modalWindowInput) {
+    //canvasBox.classList.add("blur-2xl");
+    for (let col = 0; col < 3; col++) {
+      let row = 0;
+      if (col === colInput) {
+        while (row < 3) {
+          this.renderWinnerAnimation(this.cellContainerArray[row][col], flag);
+          this.renderModalWindow(flag, modalWindowInput);
+          //this.renderWinnerAnimation(this.cellContainerArray[row][col], false);
+          row++;
+        }
+        //break;
+      }
+    }
+  }
 
-          modalWindow.classList.remove("hidden");
-          globalStatePause = false;
-        }, 590);
+  renderWinnerLeftDiagonal(flag, modalWindowInput) {
+    for (let row = 0; row < 3; row++) {
+      for (let col = 0; col < 3; col++) {
+        if (row === col) {
+          this.renderWinnerAnimation(this.cellContainerArray[row][col], flag);
+          this.renderModalWindow(flag, modalWindowInput);
+        }
+      }
+    }
+  }
+
+  renderWinnerRightDiagonal(flag, modalWindowInput) {
+    let row = 0;
+    let col = 2;
+
+    while (row < 3 && col >= 0) {
+      this.renderWinnerAnimation(this.cellContainerArray[row][col], flag);
+      this.renderModalWindow(flag, modalWindowInput);
+
+      row++;
+      col--;
+    }
+  }
+
+  drawGame(moves) {
+    let xResult = gameManager.getWinner(canvas.getCellArray(), "X");
+    let oResult = gameManager.getWinner(canvas.getCellArray(), "O");
+
+    if (moves === 9 && !xResult && !oResult) {
+      globalStatePause = true;
+      canvasBox.classList.remove("sm:border-2");
+      canvasBox.classList.add("sm:border-5");
+      canvasBox.classList.add("border-green-500");
+      setTimeout(() => {
+        this.blurScreen(true);
+        modalWindowDraw.classList.remove("hidden");
+      }, 1000);
+    }
+
+    return true;
+  }
+
+  clearCellContainers() {
+    this.cellContainerArray.forEach((containerArray) => {
+      containerArray.forEach((container) => {
+        if (container && container.hasChildNodes()) {
+          container.removeChild(container.firstChild);
+        }
       });
     });
   }
@@ -342,6 +435,11 @@ const playerB = document.getElementById("playerB");
 const modalWindow = document.getElementById("modalWindow");
 const containerBox = document.querySelector(".containerBox");
 const playerBox = document.getElementById("playerBox");
+const canvasBox = document.getElementById("canvas");
+const playAgainBtn = document.getElementById("playAgainBtn");
+const modalWindowDraw = document.getElementById("drawModalWindow");
+const playAgainDrawBtn = document.getElementById("playAgainBtn2");
+
 let globalStatePause = false;
 
 let moves = 0;
@@ -350,9 +448,11 @@ let canvas = new Canvas();
 let uIManager = new UIManager(canvas, moves);
 let gameManager = new GameManager();
 
+let winnerXObj = {};
+let winnerOObj = {};
+
 cells.forEach((cell) => {
   cell.addEventListener("click", (e) => {
-
     if (globalStatePause) {
       return;
     }
@@ -366,16 +466,18 @@ cells.forEach((cell) => {
       }
 
       //console.log(canvasCell);
-
+      //console.log(canvasCell.constructor.name)
       let active = canvas.updateCellArray(canvasCell);
       canvas.updateCellElementContainerArray(canvasCell, cell);
 
       uIManager.renderClickAnimation(cell);
-      uIManager.renderCell(canvasCell, cell);
+
+      console.log(canvasCell, cell, "r=bruh");
+      uIManager.renderCell(canvasCell);
       uIManager.renderActivePlayer(playerA, playerB, active);
 
-      let winnerXObj = gameManager.getWinner(canvas.getCellArray(), "X");
-      let winnerOObj = gameManager.getWinner(canvas.getCellArray(), "O");
+      winnerXObj = gameManager.getWinner(canvas.getCellArray(), "X");
+      winnerOObj = gameManager.getWinner(canvas.getCellArray(), "O");
 
       //console.log(winnerXObj)
 
@@ -383,41 +485,49 @@ cells.forEach((cell) => {
       if (winnerXObj) {
         if ("row" in winnerXObj) {
           console.log("row number(X) : " + winnerXObj.row);
-          uIManager.renderWinnerRow(winnerXObj.row);
-          globalStatePause = true;
+          uIManager.renderWinnerRow(winnerXObj.row, true, modalWindow);
+          //globalStatePause = true;
         }
 
         if ("col" in winnerXObj) {
-          console.log("col number(X) : " + winnerXObj.col);
+          uIManager.renderWinnerColumn(winnerXObj.col, true, modalWindow);
+          console.log("col number(X) : " + winnerXObj.col, true, modalWindow);
         }
 
         if ("leftDiagonal" in winnerXObj) {
+          uIManager.renderWinnerLeftDiagonal(true, modalWindow);
           console.log("left diagonal");
         }
 
         if ("rightDiagonal" in winnerXObj) {
           console.log("right diagonal");
+          uIManager.renderWinnerRightDiagonal(true, modalWindow);
         }
+        globalStatePause = true;
       }
 
       // check for O winner
       if (winnerOObj) {
         if ("row" in winnerOObj) {
           console.log("row number(O) : " + winnerOObj.row);
-          uIManager.renderWinnerRow(winnerOObj.row);
+          uIManager.renderWinnerRow(winnerOObj.row, true, modalWindow);
         }
 
         if ("col" in winnerOObj) {
+          uIManager.renderWinnerColumn(winnerOObj.col, true, modalWindow);
           console.log("col number(O) : " + winnerOObj.col);
         }
 
         if ("leftDiagonal" in winnerOObj) {
+          uIManager.renderWinnerLeftDiagonal(true, modalWindow);
           console.log("left diagonal");
         }
 
         if ("rightDiagonal" in winnerOObj) {
           console.log("right diagonal");
+          uIManager.renderWinnerRightDiagonal(true, modalWindow);
         }
+        globalStatePause = true;
       }
 
       if (!active) {
@@ -425,8 +535,94 @@ cells.forEach((cell) => {
       }
 
       moves++;
-    } else {
+
+      console.log(moves);
+      console.log(uIManager.drawGame(moves));
+    } else if (moves === 9) {
       window.alert("game over nigga!");
+      console.log(gameManager.getWinner(canvas.getCellArray(), "X"));
     }
   });
 });
+
+playAgainBtn.addEventListener("click", () => {
+  closeModalWindow(modalWindow, false);
+});
+
+playAgainDrawBtn.addEventListener("click", () => {
+  console.log("close draw");
+  closeModalWindow(modalWindowDraw, true);
+});
+
+//<div class="tenor-gif-embed" data-postid="7313575077068622147" data-share-method="host" data-aspect-ratio="1" data-width="100%"><a href="https://tenor.com/view/spongebob-spongebob-confetti-confetti-cortico-confetti-spongebob-spongebob-smile-gif-7313575077068622147">Spongebob Spongebob Confetti Sticker</a>from <a href="https://tenor.com/search/spongebob-stickers">Spongebob Stickers</a></div> <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
+
+function closeModalWindow(modalWindowInput, flag) {
+  if (flag) {
+    canvasBox.classList.add("sm:border-2");
+    canvasBox.classList.remove("sm:border-5");
+    canvasBox.classList.remove("border-green-500");
+    uIManager.blurScreen(false);
+    modalWindowInput.classList.add("hidden");
+  }
+
+  if (winnerXObj) {
+    if ("row" in winnerXObj) {
+      console.log("row number(X) : " + winnerXObj.row);
+      uIManager.renderWinnerRow(winnerXObj.row, false, modalWindowInput);
+      //globalStatePause = true;
+    }
+
+    if ("col" in winnerXObj) {
+      uIManager.renderWinnerColumn(winnerXObj.col, false, modalWindowInput);
+      console.log("col number(X) : " + winnerXObj.col, false, modalWindowInput);
+    }
+
+    if ("leftDiagonal" in winnerXObj) {
+      uIManager.renderWinnerLeftDiagonal(false, modalWindowInput);
+      console.log("left diagonal");
+    }
+
+    if ("rightDiagonal" in winnerXObj) {
+      console.log("right diagonal");
+      uIManager.renderWinnerRightDiagonal(false, modalWindowInput);
+    }
+  }
+
+  // check for O winner
+  if (winnerOObj) {
+    if ("row" in winnerOObj) {
+      console.log("row number(O) : " + winnerOObj.row);
+      uIManager.renderWinnerRow(winnerOObj.row, false, modalWindowInput);
+    }
+
+    if ("col" in winnerOObj) {
+      console.log("column");
+      uIManager.renderWinnerColumn(winnerOObj.col, false, modalWindowInput);
+      console.log("col number(O) : " + winnerOObj.col);
+    }
+
+    if ("leftDiagonal" in winnerOObj) {
+      uIManager.renderWinnerLeftDiagonal(false, modalWindowInput);
+      console.log("left diagonal");
+    }
+
+    if ("rightDiagonal" in winnerOObj) {
+      console.log("right diagonal");
+      uIManager.renderWinnerRightDiagonal(false, modalWindowInput);
+    }
+    globalStatePause = true;
+  }
+
+  canvas.resetArrays();
+
+  uIManager.clearCellContainers();
+
+  uIManager.renderActivePlayer(playerA, playerB, (moves % 2 !== 0))
+
+  moves = 0;
+
+  winnerXObj = {};
+  winnerOObj = {};
+
+  globalStatePause = false;
+}

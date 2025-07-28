@@ -4,6 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script
+      type="text/javascript"
+      async
+      src="https://tenor.com/embed.js"
+    ></script>
     <link
       href="https://fonts.googleapis.com/css2?family=Comic+Neue&display=swap"
       rel="stylesheet"
@@ -13,7 +18,32 @@
     <title>Document</title>
   </head>
   <body class="min-h-screen bg-gradient-to-b from-purple-600 to-rose-500">
-    <!--modal window-->
+    <!--Draw Modal Window-->
+    <div
+      id="drawModalWindow"
+      class="hidden border-2 border-white rounded-2xl absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 h-[70vh] lg:w-[50%] md:w-[75%] sm:w-[90%] w-[100%] flex flex-col justify-between items-center z-10 sm:text-4xl text-md sm:gap-5 gap-3 sm:text-stroke2 text-stroke3 text-green"
+    >
+      <div class="flex flex-col justify-center items-center gap-5 w-full">
+        <h1
+          class="w-full text-center p-5 bg-gradient-to-b from-green-500 to-blue-700 text-white rounded-2xl mb-[10%]"
+        >
+          Match Draw
+        </h1>
+        <img
+          class="sm:w-[30%] w-[40%] mb-[10%]"
+          src="./utilities/pngegg.png"
+          alt=""
+        />
+        <button
+          id="playAgainBtn2"
+          class="border p-5 border-white rounded-2xl bg-gradient-to-b from-green-500 to-blue-700 cursor-pointer text-white font-bold rounded-full shadow-lg hover:shadow-xl transition duration-200 shadow-2xl"
+        >
+          Play Again?
+        </button>
+      </div>
+      <!--<video src="./utilities/spongebob-spongebob-confetti.mp4" autoplay loop muted playsinline class="w-[25%] h-auto rounded-xl shadow-lg"></video> -->
+    </div>
+    <!--modal window winner -->
     <div
       id="modalWindow"
       class="hidden border-2 border-white rounded-2xl absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 h-[70vh] lg:w-[50%] md:w-[75%] sm:w-[90%] w-[100%] flex flex-col justify-center items-center z-10 sm:text-4xl text-md sm:gap-5 gap-3 sm:text-stroke2 text-stroke3 text-green"
@@ -38,22 +68,25 @@
         </div>
         <div
           class="border border-white rounded-4xl p-5 bg-gradient-to-b from-white-100 to-rose-500 sm:h-[30vh] flex flex-col justify-center items-center w-full gap-5 shadow-2xl"
-        > 
-          <div class="bg-gradient-to-b from-green-500 to-blue-700 rounded-4xl p-2 text-white">🥳 WINNER 🥳</div>
+        >
+          <div
+            class="bg-gradient-to-b from-green-500 to-blue-700 rounded-4xl p-2 text-white"
+          >
+            🥳 WINNER 🥳
+          </div>
           <div class="flex justify-center items-center sm:gap-17 gap-10">
             <div>
               <img
                 src="./utilities/pngtree-world-cup-winner-golden-trophy-png-image_15696075.png"
-                
                 alt=""
                 class="sm:w-[75px] w-[40px]"
               />
             </div>
-              <h1>🥷</h1>
+            <h1>🥷</h1>
             <div>
               <img
                 src="./utilities/pngtree-world-cup-winner-golden-trophy-png-image_15696075.png"
-                 alt=""
+                alt=""
                 class="sm:w-[75px] w-[40px]"
               />
             </div>
@@ -63,7 +96,7 @@
         <div class="flex justify-center items-center">
           <button
             id="playAgainBtn"
-            class="border p-5 border-white rounded-2xl bg-gradient-to-b from-green-500 to-blue-700  cursor-pointer text-white font-bold rounded-full shadow-lg hover:shadow-xl transition duration-200 shadow-2xl"
+            class="border p-5 border-white rounded-2xl bg-gradient-to-b from-green-500 to-blue-700 cursor-pointer text-white font-bold rounded-full shadow-lg hover:shadow-xl transition duration-200 shadow-2xl"
           >
             Play Again?
           </button>
@@ -78,14 +111,17 @@
       <img src="./utilities/strategic-plan.png" width="40px" alt="" />
     </header>
     <main
-      class="containerBox sm:h-[55vh] h-[43vh] w-full mt-20 flex justify-center items-center"
+      class="containerBox sm:h-[60vh] h-[60vh] w-full mt-20 flex justify-center items-center"
     >
       <div
         id="canvas"
-        class="flex flex-col sm:border-2 h-full lg:w-[30%] md:w-[50%] sm:w[75%] w-[90%] lg text-white shadow-4xl sm:rounded-4xl p-10 gap-5 h-full w-full bg-pink-400 bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-10 sm:border sm:border-gray-100"
+        class="flex flex-col sm:border-2 h-full lg:w-[30%] md:w-[50%] sm:w[75%] w-[90%] lg text-white shadow-4xl sm:rounded-4xl p-10 gap-5 h-full w-full bg-pink-400 bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-10"
       >
         <!-- first row -->
-        <div id="0" class="h-1/3 w-full flex justify-center items-center gap-5 row">
+        <div
+          id="0"
+          class="h-1/3 w-full flex justify-center items-center gap-5 row"
+        >
           <div
             id="0"
             class="cell cursor-pointer flex justify-center items-center border-2 w-1/3 h-full rounded-2xl shadow-2xl bg-gradient-to-b from-yellow-400 to-orange-400"
@@ -118,7 +154,10 @@
           ></div>
         </div>
         <!-- Third row-->
-        <div id="2" class="h-1/3 w-full flex justify-center items-center gap-5 row">
+        <div
+          id="2"
+          class="h-1/3 w-full flex justify-center items-center gap-5 row"
+        >
           <div
             id="0"
             class="cell cursor-pointer flex justify-center items-center border-2 w-1/3 h-full rounded-2xl shadow-2xl bg-gradient-to-b from-yellow-400 to-orange-400"
@@ -134,10 +173,7 @@
         </div>
       </div>
     </main>
-    <div
-      id="playerBox"
-      class="mt-10 flex justify-between px-5 h-[8vh]"
-    >
+    <div id="playerBox" class="mt-10 flex justify-between px-5 h-[8vh]">
       <!--Player 1 bg-gradient-to-b from-yellow-400 to-orange-400-->
       <div
         id="playerA"

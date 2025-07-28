@@ -12,6 +12,11 @@ body {
   transform: scale(1.1);
 }
 
+#drawModalWindow {
+  transition-timing-function: ease-out;
+  transition-duration: 100ms;
+}
+
 .text-stroke {
   -webkit-text-stroke: 4px black; /* THICK border */
 }
