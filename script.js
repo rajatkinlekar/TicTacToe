@@ -124,6 +124,16 @@ class UIManager {
     });
   }
 
+  renderWinnerPlayer(player) {
+    winnerBox.innerText = "";
+
+    if (player === playerA) {
+      winnerBox.innerText = "🥷";
+    } else {
+      winnerBox.innerText = "🤖";
+    }
+  }
+
   renderClickAnimation(cellContainerElement) {
     cellContainerElement.style.transform = "scale(0.8)";
     setTimeout(() => {
@@ -439,6 +449,7 @@ const canvasBox = document.getElementById("canvas");
 const playAgainBtn = document.getElementById("playAgainBtn");
 const modalWindowDraw = document.getElementById("drawModalWindow");
 const playAgainDrawBtn = document.getElementById("playAgainBtn2");
+const winnerBox = document.getElementById("winnerBox");
 
 let globalStatePause = false;
 
@@ -486,23 +497,29 @@ cells.forEach((cell) => {
         if ("row" in winnerXObj) {
           console.log("row number(X) : " + winnerXObj.row);
           uIManager.renderWinnerRow(winnerXObj.row, true, modalWindow);
+          uIManager.renderWinnerPlayer(playerA);
           //globalStatePause = true;
         }
 
         if ("col" in winnerXObj) {
           uIManager.renderWinnerColumn(winnerXObj.col, true, modalWindow);
           console.log("col number(X) : " + winnerXObj.col, true, modalWindow);
+          uIManager.renderWinnerPlayer(playerA);
         }
 
         if ("leftDiagonal" in winnerXObj) {
           uIManager.renderWinnerLeftDiagonal(true, modalWindow);
           console.log("left diagonal");
+          uIManager.renderWinnerPlayer(playerA);
         }
 
         if ("rightDiagonal" in winnerXObj) {
           console.log("right diagonal");
           uIManager.renderWinnerRightDiagonal(true, modalWindow);
+          uIManager.renderWinnerPlayer(playerA);
         }
+
+        
         globalStatePause = true;
       }
 
@@ -511,21 +528,25 @@ cells.forEach((cell) => {
         if ("row" in winnerOObj) {
           console.log("row number(O) : " + winnerOObj.row);
           uIManager.renderWinnerRow(winnerOObj.row, true, modalWindow);
+          uIManager.renderWinnerPlayer(playerB);
         }
 
         if ("col" in winnerOObj) {
           uIManager.renderWinnerColumn(winnerOObj.col, true, modalWindow);
           console.log("col number(O) : " + winnerOObj.col);
+          uIManager.renderWinnerPlayer(playerB);
         }
 
         if ("leftDiagonal" in winnerOObj) {
           uIManager.renderWinnerLeftDiagonal(true, modalWindow);
           console.log("left diagonal");
+          uIManager.renderWinnerPlayer(playerB);
         }
 
         if ("rightDiagonal" in winnerOObj) {
           console.log("right diagonal");
           uIManager.renderWinnerRightDiagonal(true, modalWindow);
+          uIManager.renderWinnerPlayer(playerB);
         }
         globalStatePause = true;
       }
